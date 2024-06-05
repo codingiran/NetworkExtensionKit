@@ -21,12 +21,12 @@ public enum NETunnelProviderMessageError: LocalizedError {
     }
 }
 
-public protocol NETunnelProviderMessageConvertible {
+public protocol NETunnelProviderMessaging {
     var messageData: Data? { get }
     init?(messageData: Data)
 }
 
-extension Data: NETunnelProviderMessageConvertible {
+extension Data: NETunnelProviderMessaging {
     public var messageData: Data? {
         self
     }
@@ -36,7 +36,7 @@ extension Data: NETunnelProviderMessageConvertible {
     }
 }
 
-extension String: NETunnelProviderMessageConvertible {
+extension String: NETunnelProviderMessaging {
     public var messageData: Data? {
         self.data(using: .utf8)
     }
@@ -49,7 +49,7 @@ extension String: NETunnelProviderMessageConvertible {
     }
 }
 
-extension Dictionary: NETunnelProviderMessageConvertible where Key == String, Value == Any {
+extension Dictionary: NETunnelProviderMessaging where Key == String, Value == Any {
     public var messageData: Data? {
         try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
     }
@@ -71,7 +71,7 @@ import NetworkExtension
 
 public extension NETunnelProviderManager {
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    func sendMessage<ResponseMessage: NETunnelProviderMessageConvertible>(_ message: NETunnelProviderMessageConvertible) async throws -> ResponseMessage? {
+    func sendMessage<T>(_ message: NETunnelProviderMessaging) async throws -> T? where T: NETunnelProviderMessaging {
         guard let session = connection as? NETunnelProviderSession
         else {
             throw NETunnelProviderMessageError.tunnelProviderSessionUnavailable
@@ -83,7 +83,7 @@ public extension NETunnelProviderManager {
         guard let responseData = try await session.sendProviderMessage(messageData) else {
             return nil
         }
-        return ResponseMessage(messageData: responseData)
+        return T(messageData: responseData)
     }
 }
 
