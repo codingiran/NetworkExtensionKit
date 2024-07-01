@@ -82,7 +82,7 @@ public extension NETunnelProvider {
     }
 
     private func exit(code: Int32 = EXIT_SUCCESS) {
-        _SwiftConcurrencyShims.exit(code)
+        Darwin.exit(code)
     }
 }
 
