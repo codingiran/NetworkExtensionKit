@@ -47,10 +47,12 @@ public extension NEPacketTunnelNetworkSettings {
     }
 
     struct DNSConfig {
+        public var `protocol`: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol
         public var servers: [String]
         public var matchDomains: [String]?
 
-        public init(servers: [String], matchDomains: [String]? = nil) {
+        public init(protocol: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol, servers: [String], matchDomains: [String]? = nil) {
+            self.protocol = `protocol`
             self.servers = servers
             self.matchDomains = matchDomains
         }
@@ -145,6 +147,32 @@ public extension NEPacketTunnelNetworkSettings {
             self.proxySettings = proxySettings
         }
         self.mtu = NSNumber(value: mtu)
+    }
+}
+
+public extension NEPacketTunnelNetworkSettings.DNSConfig {
+    enum DNSProtocol: String, Codable {
+        case plain
+        case https
+        case tls
+        public static let fallback: DNSProtocol = .plain
+    }
+}
+
+public extension NEPacketTunnelNetworkSettings.DNSConfig {
+    init(nameservers: [String] = [], matchDomains: [String]? = nil) {
+        if nameservers.contains(where: { $0.hasPrefix("https://") }) {
+            self.init(protocol: .https, servers: nameservers, matchDomains: matchDomains)
+        } else if nameservers.contains(where: { $0.hasPrefix("tls://") }) {
+            let servers = nameservers.map { nameserver in
+                var url = nameserver
+                if let range = url.range(of: "tls://") { url.removeSubrange(range) }
+                return url
+            }
+            self.init(protocol: .tls, servers: servers, matchDomains: matchDomains)
+        } else {
+            self.init(protocol: .plain, servers: nameservers, matchDomains: matchDomains)
+        }
     }
 }
 
