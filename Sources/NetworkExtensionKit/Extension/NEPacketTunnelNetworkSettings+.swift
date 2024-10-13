@@ -83,41 +83,54 @@ public extension NEPacketTunnelNetworkSettings {
                      ipv4Config: Ipv4Config? = nil,
                      ipv6Config: Ipv6Config? = nil,
                      dnsConfig: DNSConfig? = nil,
-                     tlsDnsConfig: DNSConfig? = nil,
-                     httpsDnsConfig: DNSConfig? = nil,
                      proxyConfig: ProxyConfig? = nil,
                      mtu: UInt = 1500)
     {
         self.init(tunnelRemoteAddress: remoteAddress)
         if let ipv4Config {
             let ipv4Settings = NEIPv4Settings(addresses: ipv4Config.addresses, subnetMasks: ipv4Config.subnetMasks)
-            ipv4Settings.includedRoutes = ipv4Config.includedRoutes
-            ipv4Settings.excludedRoutes = ipv4Config.excludedRoutes
+            if let includedRoutes = ipv4Config.includedRoutes {
+                ipv4Settings.includedRoutes = includedRoutes
+            }
+            if let excludedRoutes = ipv4Config.excludedRoutes {
+                ipv4Settings.excludedRoutes = excludedRoutes
+            }
             self.ipv4Settings = ipv4Settings
         }
         if let ipv6Config {
             let ipv6Settings = NEIPv6Settings(addresses: ipv6Config.addresses, networkPrefixLengths: ipv6Config.networkPrefixLengths.map { NSNumber(value: $0) })
-            ipv6Settings.includedRoutes = ipv6Config.includedRoutes
-            ipv6Settings.excludedRoutes = ipv6Config.excludedRoutes
+            if let includedRoutes = ipv6Config.includedRoutes {
+                ipv6Settings.includedRoutes = includedRoutes
+            }
+            if let excludedRoutes = ipv6Config.excludedRoutes {
+                ipv6Settings.excludedRoutes = excludedRoutes
+            }
             self.ipv6Settings = ipv6Settings
         }
         if let dnsConfig {
-            let dnsSettings = NEDNSSettings(servers: dnsConfig.servers)
-            dnsSettings.matchDomains = dnsConfig.matchDomains
-            self.dnsSettings = dnsSettings
-        }
-
-        if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
-            if let tlsDnsConfig {
-                let tlsDnsSettings = NEDNSOverTLSSettings(servers: tlsDnsConfig.servers)
-                tlsDnsSettings.matchDomains = tlsDnsConfig.matchDomains
-                self.dnsSettings = tlsDnsSettings
-            }
-
-            if let httpsDnsConfig {
-                let httpsDnsSettings = NEDNSOverHTTPSSettings(servers: httpsDnsConfig.servers)
-                httpsDnsSettings.matchDomains = httpsDnsConfig.matchDomains
-                self.dnsSettings = httpsDnsSettings
+            switch dnsConfig.protocol {
+            case .plain:
+                let dnsSettings = NEDNSSettings(servers: dnsConfig.servers)
+                dnsSettings.matchDomains = dnsConfig.matchDomains
+                self.dnsSettings = dnsSettings
+            case .tls:
+                if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
+                    let tlsDnsSettings = NEDNSOverTLSSettings(servers: [])
+                    if let serverName = dnsConfig.servers.first {
+                        tlsDnsSettings.serverName = serverName
+                    }
+                    tlsDnsSettings.matchDomains = dnsConfig.matchDomains
+                    self.dnsSettings = tlsDnsSettings
+                }
+            case .https:
+                if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
+                    let httpsDnsSettings = NEDNSOverHTTPSSettings(servers: [])
+                    if let server = dnsConfig.servers.first, let serverURL = URL(string: server) {
+                        httpsDnsSettings.serverURL = serverURL
+                    }
+                    httpsDnsSettings.matchDomains = dnsConfig.matchDomains
+                    self.dnsSettings = httpsDnsSettings
+                }
             }
         }
 
@@ -161,15 +174,13 @@ public extension NEPacketTunnelNetworkSettings.DNSConfig {
 
 public extension NEPacketTunnelNetworkSettings.DNSConfig {
     init(nameservers: [String] = [], matchDomains: [String]? = nil) {
-        if nameservers.contains(where: { $0.hasPrefix("https://") }) {
-            self.init(protocol: .https, servers: nameservers, matchDomains: matchDomains)
-        } else if nameservers.contains(where: { $0.hasPrefix("tls://") }) {
-            let servers = nameservers.map { nameserver in
-                var url = nameserver
-                if let range = url.range(of: "tls://") { url.removeSubrange(range) }
-                return url
+        if let httpsDNS = nameservers.first(where: { $0.hasPrefix("https://") }) {
+            self.init(protocol: .https, servers: [httpsDNS], matchDomains: matchDomains)
+        } else if var tlsDNS = nameservers.first(where: { $0.hasPrefix("tls://") }) {
+            if let range = tlsDNS.range(of: "tls://") {
+                tlsDNS.removeSubrange(range)
             }
-            self.init(protocol: .tls, servers: servers, matchDomains: matchDomains)
+            self.init(protocol: .tls, servers: [tlsDNS], matchDomains: matchDomains)
         } else {
             self.init(protocol: .plain, servers: nameservers, matchDomains: matchDomains)
         }
