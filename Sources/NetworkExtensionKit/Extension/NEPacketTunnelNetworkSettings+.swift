@@ -187,6 +187,43 @@ public extension NEPacketTunnelNetworkSettings.DNSConfig {
     }
 }
 
+public extension NEPacketTunnelNetworkSettings {
+    override var description: String {
+        return """
+        remoteAddress: \(tunnelRemoteAddress)
+        mtu: \(String(describing: mtu))
+        dnsservers: \(dnsSettings?.servers ?? [])
+        dnsmatchdomains: \(dnsSettings?.matchDomains ?? [])
+        ipv4Settings: \(ipv4Settings?.description ?? "null")
+        ipv6Settings: \(ipv6Settings?.description ?? "null")
+        """
+    }
+}
+
+public extension NEIPv4Settings {
+    override var description: String {
+        return "addresses: \(addresses), subnetMasks: \(subnetMasks), includedRoutes: \(includedRoutes?.description ?? "null")"
+    }
+}
+
+public extension NEIPv6Settings {
+    override var description: String {
+        return "addresses: \(addresses), networkPrefixLengths: \(networkPrefixLengths), includedRoutes: \(includedRoutes?.description ?? "null")"
+    }
+}
+
+public extension NEIPv4Route {
+    override var description: String {
+        return "(destinationAddress: \(destinationAddress), destinationSubnetMask: \(destinationSubnetMask), gatewayAddress: \(gatewayAddress ?? "null"))"
+    }
+}
+
+public extension NEIPv6Route {
+    override var description: String {
+        return "(destinationAddress: \(destinationAddress), destinationNetworkPrefixLength: \(destinationNetworkPrefixLength), gatewayAddress: \(gatewayAddress ?? "null"))"
+    }
+}
+
 public extension Array where Element == NEIPv4Route {
     static var defaultIpv4Routes: [NEIPv4Route] { [NEIPv4Route.default()] }
 }

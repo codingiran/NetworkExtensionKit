@@ -10,7 +10,7 @@
 import Foundation
 import NetworkExtension
 
-extension NEVPNStatus: CustomStringConvertible {
+extension NEVPNStatus: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .invalid:

@@ -10,7 +10,7 @@
 import Foundation
 import NetworkExtension
 
-extension NEProviderStopReason: CustomStringConvertible {
+extension NEProviderStopReason: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .userInitiated:
