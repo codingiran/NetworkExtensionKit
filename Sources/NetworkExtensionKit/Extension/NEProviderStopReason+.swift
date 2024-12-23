@@ -36,6 +36,7 @@ extension NEProviderStopReason: @retroactive CustomStringConvertible {
 
         case .idleTimeout:
             return "idleTimeout"
+
         case .configurationDisabled:
             return "configurationDisabled"
 
@@ -62,6 +63,9 @@ extension NEProviderStopReason: @retroactive CustomStringConvertible {
 
         case .none:
             return "none"
+
+        case .internalError:
+            return "internalError"
 
         @unknown default:
             return "unknown"

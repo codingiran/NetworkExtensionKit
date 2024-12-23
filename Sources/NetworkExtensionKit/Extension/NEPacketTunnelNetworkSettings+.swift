@@ -108,30 +108,8 @@ public extension NEPacketTunnelNetworkSettings {
             self.ipv6Settings = ipv6Settings
         }
         if let dnsConfig {
-            switch dnsConfig.protocol {
-            case .plain:
-                let dnsSettings = NEDNSSettings(servers: dnsConfig.servers)
-                dnsSettings.matchDomains = dnsConfig.matchDomains
-                self.dnsSettings = dnsSettings
-            case .tls:
-                if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
-                    let tlsDnsSettings = NEDNSOverTLSSettings(servers: [])
-                    if let serverName = dnsConfig.servers.first {
-                        tlsDnsSettings.serverName = serverName
-                    }
-                    tlsDnsSettings.matchDomains = dnsConfig.matchDomains
-                    self.dnsSettings = tlsDnsSettings
-                }
-            case .https:
-                if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
-                    let httpsDnsSettings = NEDNSOverHTTPSSettings(servers: [])
-                    if let server = dnsConfig.servers.first, let serverURL = URL(string: server) {
-                        httpsDnsSettings.serverURL = serverURL
-                    }
-                    httpsDnsSettings.matchDomains = dnsConfig.matchDomains
-                    self.dnsSettings = httpsDnsSettings
-                }
-            }
+            let dnsSettings = NEDNSSettings.from(dnsConfig: dnsConfig)
+            self.dnsSettings = dnsSettings
         }
 
         if let proxyConfig {
@@ -160,6 +138,40 @@ public extension NEPacketTunnelNetworkSettings {
             self.proxySettings = proxySettings
         }
         self.mtu = NSNumber(value: mtu)
+    }
+}
+
+public extension NetworkExtension.NEDNSSettings {
+    static func from(dnsConfig: NEPacketTunnelNetworkSettings.DNSConfig) -> NetworkExtension.NEDNSSettings? {
+        switch dnsConfig.protocol {
+        case .plain:
+            let dnsSettings = NEDNSSettings(servers: dnsConfig.servers)
+            dnsSettings.matchDomains = dnsConfig.matchDomains
+            return dnsSettings
+        case .tls:
+            if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
+                let tlsDnsSettings = NEDNSOverTLSSettings(servers: [])
+                if let serverName = dnsConfig.servers.first {
+                    tlsDnsSettings.serverName = serverName
+                }
+                tlsDnsSettings.matchDomains = dnsConfig.matchDomains
+                return tlsDnsSettings
+            }
+        case .https:
+            if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
+                let httpsDnsSettings = NEDNSOverHTTPSSettings(servers: [])
+                if let server = dnsConfig.servers.first, let serverURL = URL(string: server) {
+                    httpsDnsSettings.serverURL = serverURL
+                }
+                httpsDnsSettings.matchDomains = dnsConfig.matchDomains
+                return httpsDnsSettings
+            }
+        }
+        return nil
+    }
+
+    static func from(nameservers: [String] = [], matchDomains: [String]? = nil) -> NetworkExtension.NEDNSSettings? {
+        return from(dnsConfig: .init(nameservers: nameservers, matchDomains: matchDomains))
     }
 }
 
