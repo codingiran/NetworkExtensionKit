@@ -18,7 +18,7 @@ Add the following dependency to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/your-username/NetworkExtensionKit.git", from: "0.0.9")
+    .package(url: "https://github.com/codingiran/NetworkExtensionKit.git", from: "0.0.9")
 ]
 ```
 
