@@ -70,6 +70,13 @@ public extension NETunnelProvider {
 }
 
 public extension NETunnelProvider {
+    func setReasserting(_ reasserting: Bool) {
+        guard self.reasserting != reasserting else { return }
+        self.reasserting = reasserting
+    }
+}
+
+public extension NETunnelProvider {
     func exitProcess(after delay: TimeInterval? = nil) {
         if let delay {
             Task {

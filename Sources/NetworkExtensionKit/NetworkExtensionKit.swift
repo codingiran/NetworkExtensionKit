@@ -12,5 +12,5 @@ import Foundation
 #error("AppleExtension doesn't support Swift versions below 5.5.")
 #endif
 
-/// Current AppleExtension version 0.0.9. Necessary since SPM doesn't use dynamic libraries. Plus this will be more accurate.
-let version = "0.0.9"
+/// Current AppleExtension version 0.1.0. Necessary since SPM doesn't use dynamic libraries. Plus this will be more accurate.
+public let version = "0.1.0"
