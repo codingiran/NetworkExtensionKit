@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum NETunnelProviderMessageError: LocalizedError {
+public enum NETunnelProviderMessageError: LocalizedError, Sendable {
     case tunnelProviderSessionUnavailable
     case messageDataConvertError
 

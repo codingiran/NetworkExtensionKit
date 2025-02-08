@@ -8,7 +8,11 @@
 #if canImport(NetworkExtension)
 
 import NetworkExtension
-import NetworkExtensionKitObjC
+#if compiler(>=6.0)
+private import NetworkExtensionKitObjC
+#else
+@_implementationOnly import NetworkExtensionKitObjC
+#endif
 
 public extension NETunnelProvider {
     /// Tunnel device file descriptor.
@@ -77,6 +81,7 @@ public extension NETunnelProvider {
 }
 
 public extension NETunnelProvider {
+    @MainActor
     func exitProcess(after delay: TimeInterval? = nil) {
         if let delay {
             Task {

@@ -25,11 +25,17 @@ let package = Package(
                 "NetworkExtensionKitObjC",
             ],
             path: "Sources/NetworkExtensionKit",
-            resources: [.copy("Resources/PrivacyInfo.xcprivacy")]),
+            resources: [.copy("Resources/PrivacyInfo.xcprivacy")],
+            linkerSettings: [
+                .linkedFramework("NetworkExtension", .when(platforms: [.iOS, .macOS, .tvOS])),
+            ]),
         .target(
             name: "NetworkExtensionKitObjC",
             path: "Sources/NetworkExtensionKitObjC",
-            publicHeadersPath: "include"),
+            publicHeadersPath: "include",
+            linkerSettings: [
+                .linkedFramework("NetworkExtension", .when(platforms: [.iOS, .macOS, .tvOS])),
+            ]),
         .testTarget(
             name: "NetworkExtensionKitTests",
             dependencies: ["NetworkExtensionKit"]),

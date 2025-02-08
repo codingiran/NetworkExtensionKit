@@ -7,10 +7,10 @@
 
 #if canImport(NetworkExtension)
 
-import NetworkExtension
+@preconcurrency import NetworkExtension
 
 public extension NEPacketTunnelNetworkSettings {
-    struct Ipv4Config {
+    struct Ipv4Config: Sendable {
         public var addresses: [String]
         public var subnetMasks: [String]
         public var includedRoutes: [NEIPv4Route]?
@@ -28,7 +28,7 @@ public extension NEPacketTunnelNetworkSettings {
         }
     }
 
-    struct Ipv6Config {
+    struct Ipv6Config: Sendable {
         public var addresses: [String]
         public var networkPrefixLengths: [UInt]
         public var includedRoutes: [NEIPv6Route]?
@@ -46,7 +46,7 @@ public extension NEPacketTunnelNetworkSettings {
         }
     }
 
-    struct DNSConfig {
+    struct DNSConfig: Sendable {
         public var `protocol`: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol
         public var servers: [String]
         public var matchDomains: [String]?
@@ -58,7 +58,7 @@ public extension NEPacketTunnelNetworkSettings {
         }
     }
 
-    struct ProxyConfig {
+    struct ProxyConfig: Sendable {
         public var httpServerAddress: String?
         public var httpServerPort: Int?
         public var httpsServerAddress: String?
@@ -176,7 +176,7 @@ public extension NetworkExtension.NEDNSSettings {
 }
 
 public extension NEPacketTunnelNetworkSettings.DNSConfig {
-    enum DNSProtocol: String, Codable {
+    enum DNSProtocol: String, Codable, Sendable {
         case plain
         case https
         case tls
