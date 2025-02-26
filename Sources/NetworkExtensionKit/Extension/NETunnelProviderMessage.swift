@@ -49,17 +49,12 @@ extension String: NETunnelProviderMessaging {
     }
 }
 
-extension Dictionary: NETunnelProviderMessaging {
-    public var messageData: Data? { nil }
-    public init?(messageData: Data) { nil }
-}
-
-public extension Dictionary where Key == String, Value == Any {
-    var messageData: Data? {
+extension Dictionary: NETunnelProviderMessaging where Key == String, Value == Any {
+    public var messageData: Data? {
         try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
     }
 
-    init?(messageData: Data) {
+    public init?(messageData: Data) {
         guard let data = try? JSONSerialization.jsonObject(with: messageData, options: []) as? [String: Any] else {
             return nil
         }
