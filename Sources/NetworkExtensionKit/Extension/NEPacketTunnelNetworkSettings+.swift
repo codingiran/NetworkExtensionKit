@@ -50,11 +50,17 @@ public extension NEPacketTunnelNetworkSettings {
         public var `protocol`: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol
         public var servers: [String]
         public var matchDomains: [String]?
+        public var matchDomainsNoSearch: Bool
 
-        public init(protocol: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol, servers: [String], matchDomains: [String]? = nil) {
+        public init(protocol: NEPacketTunnelNetworkSettings.DNSConfig.DNSProtocol,
+                    servers: [String],
+                    matchDomains: [String]? = nil,
+                    matchDomainsNoSearch: Bool = false)
+        {
             self.protocol = `protocol`
             self.servers = servers
             self.matchDomains = matchDomains
+            self.matchDomainsNoSearch = matchDomainsNoSearch
         }
     }
 
@@ -147,6 +153,7 @@ public extension NetworkExtension.NEDNSSettings {
         case .plain:
             let dnsSettings = NEDNSSettings(servers: dnsConfig.servers)
             dnsSettings.matchDomains = dnsConfig.matchDomains
+            dnsSettings.matchDomainsNoSearch = dnsConfig.matchDomainsNoSearch
             return dnsSettings
         case .tls:
             if #available(iOS 14.0, macOS 11.0, tvOS 17.0, *) {
@@ -155,6 +162,7 @@ public extension NetworkExtension.NEDNSSettings {
                     tlsDnsSettings.serverName = serverName
                 }
                 tlsDnsSettings.matchDomains = dnsConfig.matchDomains
+                tlsDnsSettings.matchDomainsNoSearch = dnsConfig.matchDomainsNoSearch
                 return tlsDnsSettings
             }
         case .https:
@@ -164,14 +172,15 @@ public extension NetworkExtension.NEDNSSettings {
                     httpsDnsSettings.serverURL = serverURL
                 }
                 httpsDnsSettings.matchDomains = dnsConfig.matchDomains
+                httpsDnsSettings.matchDomainsNoSearch = dnsConfig.matchDomainsNoSearch
                 return httpsDnsSettings
             }
         }
         return nil
     }
 
-    static func from(nameservers: [String] = [], matchDomains: [String]? = nil) -> NetworkExtension.NEDNSSettings? {
-        return from(dnsConfig: .init(nameservers: nameservers, matchDomains: matchDomains))
+    static func from(nameservers: [String] = [], matchDomains: [String]? = nil, matchDomainsNoSearch: Bool = false) -> NetworkExtension.NEDNSSettings? {
+        return from(dnsConfig: .init(nameservers: nameservers, matchDomains: matchDomains, matchDomainsNoSearch: matchDomainsNoSearch))
     }
 }
 
@@ -185,16 +194,16 @@ public extension NEPacketTunnelNetworkSettings.DNSConfig {
 }
 
 public extension NEPacketTunnelNetworkSettings.DNSConfig {
-    init(nameservers: [String] = [], matchDomains: [String]? = nil) {
+    init(nameservers: [String] = [], matchDomains: [String]? = nil, matchDomainsNoSearch: Bool = false) {
         if let httpsDNS = nameservers.first(where: { $0.hasPrefix("https://") }) {
-            self.init(protocol: .https, servers: [httpsDNS], matchDomains: matchDomains)
+            self.init(protocol: .https, servers: [httpsDNS], matchDomains: matchDomains, matchDomainsNoSearch: matchDomainsNoSearch)
         } else if var tlsDNS = nameservers.first(where: { $0.hasPrefix("tls://") }) {
             if let range = tlsDNS.range(of: "tls://") {
                 tlsDNS.removeSubrange(range)
             }
-            self.init(protocol: .tls, servers: [tlsDNS], matchDomains: matchDomains)
+            self.init(protocol: .tls, servers: [tlsDNS], matchDomains: matchDomains, matchDomainsNoSearch: matchDomainsNoSearch)
         } else {
-            self.init(protocol: .plain, servers: nameservers, matchDomains: matchDomains)
+            self.init(protocol: .plain, servers: nameservers, matchDomains: matchDomains, matchDomainsNoSearch: matchDomainsNoSearch)
         }
     }
 }
