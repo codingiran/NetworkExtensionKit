@@ -142,6 +142,9 @@ public extension NEPacketTunnelNetworkSettings {
                 proxySettings.matchDomains = matchDomains
             }
             self.proxySettings = proxySettings
+        } else {
+            // clear proxy if not proxy settings
+            self.proxySettings = nil
         }
         self.mtu = NSNumber(value: mtu)
     }
@@ -246,11 +249,15 @@ public extension NEIPv6Route {
 }
 
 public extension Array where Element == NEIPv4Route {
-    static var defaultIpv4Routes: [NEIPv4Route] { [NEIPv4Route.default()] }
+    static var defaultIpv4Routes: [NEIPv4Route] {
+        [NEIPv4Route.default()]
+    }
 }
 
 public extension Array where Element == NEIPv6Route {
-    static var defaultIpv6Routes: [NEIPv6Route] { [NEIPv6Route.default()] }
+    static var defaultIpv6Routes: [NEIPv6Route] {
+        [NEIPv6Route.default()]
+    }
 }
 
 #endif
