@@ -10,7 +10,13 @@
 import Foundation
 import NetworkExtension
 
-extension NEVPNStatus: @retroactive CustomStringConvertible {
+#if compiler(>=6.0)
+extension NEVPNStatus: @retroactive CustomStringConvertible {}
+#else
+extension NEVPNStatus: CustomStringConvertible {}
+#endif
+
+extension NEVPNStatus {
     public var description: String {
         switch self {
         case .invalid:

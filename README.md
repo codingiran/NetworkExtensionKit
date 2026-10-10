@@ -30,6 +30,8 @@ dependencies: [
 - Xcode 15.4+
 - Swift 5.10+
 
+Swift 5.10 uses `Package@swift-5.10.swift` in Swift 5 language mode; Swift 6 uses `Package.swift` in Swift 6 language mode. Sources conditionally use `@retroactive` and decode the newer `internalError` stop reason without requiring a newer SDK symbol. This compatibility revision must be published before remote consumers can use it.
+
 ## License
 
 [MIT License](LICENSE)

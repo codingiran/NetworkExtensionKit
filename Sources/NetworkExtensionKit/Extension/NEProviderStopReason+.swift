@@ -10,7 +10,13 @@
 import Foundation
 import NetworkExtension
 
-extension NEProviderStopReason: @retroactive CustomStringConvertible {
+#if compiler(>=6.0)
+extension NEProviderStopReason: @retroactive CustomStringConvertible {}
+#else
+extension NEProviderStopReason: CustomStringConvertible {}
+#endif
+
+extension NEProviderStopReason {
     public var description: String {
         switch self {
         case .userInitiated:
@@ -64,11 +70,10 @@ extension NEProviderStopReason: @retroactive CustomStringConvertible {
         case .none:
             return "none"
 
-        case .internalError:
-            return "internalError"
-
-        @unknown default:
-            return "unknown"
+        default:
+            // Apple's internalError is raw value 17 (macOS 15.1 / iOS 18.1).
+            // Decode it without referencing a symbol absent from older SDKs.
+            return rawValue == 17 ? "internalError" : "unknown"
         }
     }
 }
