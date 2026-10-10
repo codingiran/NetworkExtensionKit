@@ -12,5 +12,5 @@ import Foundation
 #error("NetworkExtensionKit doesn't support Swift versions below 5.10.")
 #endif
 
-/// Current NetworkExtensionKit version 0.1.4. Necessary since SPM doesn't use dynamic libraries. Plus this will be more accurate.
-let version = "0.1.4"
+/// Current NetworkExtensionKit version 0.1.5. Necessary since SPM doesn't use dynamic libraries. Plus this will be more accurate.
+let version = "0.1.5"
