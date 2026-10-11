@@ -64,6 +64,7 @@ public extension NETunnelProviderManager {
         get { protocolConfiguration?.disconnectOnSleep ?? false }
     }
 
+    #if !os(tvOS)
     @available(macOS 10.15, iOS 14.0, *)
     var includeAllNetworks: Bool {
         set { protocolConfiguration?.includeAllNetworks = newValue }
@@ -88,7 +89,9 @@ public extension NETunnelProviderManager {
         get { protocolConfiguration?.excludeAPNs ?? false }
     }
 
-    @available(macOS 11.0, iOS 14.2, *)
+    #endif
+
+    @available(macOS 11.0, iOS 14.2, tvOS 17.0, *)
     var enforceRoutes: Bool {
         set { protocolConfiguration?.enforceRoutes = newValue }
         get { protocolConfiguration?.enforceRoutes ?? false }

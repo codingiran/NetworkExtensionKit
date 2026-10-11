@@ -70,7 +70,7 @@ import NetworkExtension
 #if canImport(_Concurrency)
 
 public extension NETunnelProviderManager {
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 17.0, *)
     func sendMessage<T>(_ message: NETunnelProviderMessaging) async throws -> T? where T: NETunnelProviderMessaging {
         guard let session = connection as? NETunnelProviderSession
         else {

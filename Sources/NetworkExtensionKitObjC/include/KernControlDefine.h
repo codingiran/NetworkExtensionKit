@@ -10,7 +10,7 @@
 /* From <sys/kern_control.h> */
 #define CTLIOCGINFO 0xc0644e03UL
 
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS || TARGET_OS_TV
 
 struct ctl_info {
     u_int32_t   ctl_id;

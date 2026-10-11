@@ -11,6 +11,19 @@ import Foundation
 import NetworkExtension
 
 public extension NETunnelProviderProtocol {
+    #if os(tvOS)
+    convenience init(providerBundleIdentifier: String?,
+                     serverAddress: String? = nil,
+                     disconnectOnSleep: Bool = false,
+                     providerConfiguration: [String: Any]? = nil)
+    {
+        self.init()
+        self.providerBundleIdentifier = providerBundleIdentifier
+        self.serverAddress = serverAddress
+        self.disconnectOnSleep = disconnectOnSleep
+        self.providerConfiguration = providerConfiguration
+    }
+    #else
     convenience init(providerBundleIdentifier: String?,
                      serverAddress: String? = nil,
                      disconnectOnSleep: Bool = false,
@@ -41,6 +54,7 @@ public extension NETunnelProviderProtocol {
             }
         }
     }
+    #endif
 }
 
 #endif

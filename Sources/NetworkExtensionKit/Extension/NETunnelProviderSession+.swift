@@ -14,7 +14,7 @@ import NetworkExtension
 #if canImport(_Concurrency)
 
 public extension NETunnelProviderSession {
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 17.0, *)
     func sendProviderMessage(_ messageData: Data) async throws -> Data? {
         return try await withCheckedThrowingContinuation { [self] cont in
             do {
